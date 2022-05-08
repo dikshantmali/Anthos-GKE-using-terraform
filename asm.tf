@@ -9,7 +9,6 @@
 #   cluster_name     = var.cluster_name
 #   location         = var.cluster_zone
 #   cluster_endpoint = google_container_cluster.cluster.endpoint
-#   enable_gke_hub_registration	= true
 #   gke_hub_membership_name = var.cluster_name
 #   use_tf_google_credentials_env_var = false
 # }
@@ -47,6 +46,8 @@ module "anthos-service_accounts" {
 #   project_id            = "${var.gcp_project}"
 #   location              = google_container_cluster.cluster.location
 #   enable_all            = true
+#   enable_gcp_iam_roles  = true
+#   enable_gcp_components = true
 #   asm_version           = "1.10"
 #   service_account       = module.anthos-service_accounts.email
 #   key_file              = "./${var.TERRAFORM_SA}.json"
