@@ -1,0 +1,69 @@
+#!/usr/bin/groovy 
+// add github repo in the General stage of pipeline
+def PROJECT_ID = "tf-testing-348604"
+def CREDENTIALS_ID = "bitbucket-clone-id"
+def BRANCH = "master"
+def GIT_REPO = "https://dikshantmali@bitbucket.org/dikshantmali/jenkins-tf-repo.git"
+def SERVICE_ACCOUNT_ID = "8c090ba5-a1af-4839-a188-f2810cbf4ea0"
+def SERVICE_ACCOUNT = "jenkins-tf-permission@tf-testing-348604.iam.gserviceaccount.com"
+pipeline {
+    agent any
+    stages {
+        // stage("Clean Workspace") {
+        //     steps {
+        //           cleanWs()
+        //     }
+        // }
+        // use below stage for bitbucket clone but we dont need this
+        // stage("git") {
+        //     steps { 
+        //         git branch: "${BRANCH}", credentialsId: "${CREDENTIALS_ID}", url: "${GIT_REPO}"
+        //     }
+        // }
+
+        stage("configfile") {
+            steps {
+                  configFileProvider([configFile(fileId: "${SERVICE_ACCOUNT_ID}", targetLocation: './jenkins-service-acc.json')]) {}
+                }          
+            }
+        stage('gcloud login') {
+            steps {
+                script{
+                    withEnv(['GCLOUD_PATH=/var/lib/jenkins/gcloud-sdk/bin']) {
+                        sh '$GCLOUD_PATH/./gcloud auth activate-service-account ${SERVICE_ACCOUNT} --key-file=jenkins-service-acc.json'
+                }
+            }
+        }
+        }
+        stage('Apply terraform Script for setting Pvtcluster and Anthos register') {
+            steps{
+
+                    ws ("/var/lib/jenkins/workspace/Vivodoc-practice/Tf-apply/Anthos-GKE-using-terraform") {
+                        sh 'pwd'
+                        sh label: '', script: "terraform init"
+                        sh label: '', script: "terraform apply -auto-approve"
+    
+                    }
+            }
+        }
+    // stage('Destroy terraform Script') {
+    //         steps{
+    //             script{
+    //                 sh label: '', script: "terraform destroy -auto-approve"
+                    
+    //             }
+    //         }
+    //     }
+    }
+    post ('revoke') {
+            always{
+                script{
+                    withEnv(['GCLOUD_PATH=/var/lib/jenkins/gcloud-sdk/bin']) {
+                        sh '$GCLOUD_PATH/./gcloud auth revoke ${SERVICE_ACCOUNT}'
+                    
+                }
+                    }
+            }
+        }
+
+}
