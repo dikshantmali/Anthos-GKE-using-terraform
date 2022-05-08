@@ -54,4 +54,39 @@ module "anthos-service_accounts" {
 # }
 
 
+  
+  
+# we can also specify version and use asm and hub as shown below
+
+
+# module "hub" {
+#   source           = "./module/terraform-google-kubernetes-engine/modules/hub"
+#   version          = "18.0.0"
+#   project_id       = var.project
+#   cluster_name     = var.cluster_name
+#   location         = var.cluster_zone
+#   cluster_endpoint = google_container_cluster.cluster.endpoint
+#   gke_hub_membership_name = var.cluster_name
+#   use_tf_google_credentials_env_var = false
+# }
+
+
+# module "asm" {
+#   source                = "terraform-google-modules/kubernetes-engine/google//modules/asm"
+#   version = "18.0.0"
+#   cluster_name          = google_container_cluster.cluster.name
+#   cluster_endpoint      = google_container_cluster.cluster.endpoint
+#   project_id            = "${var.gcp_project}"
+#   location              = google_container_cluster.cluster.location
+#   enable_all            = true
+#   enable_gcp_iam_roles  = true
+#   enable_gcp_components = true
+#   asm_version           = "1.10"
+#   service_account       = module.anthos-service_accounts.email
+#   key_file              = "./${var.TERRAFORM_SA}.json"
+# }
+
+
+
+
 
