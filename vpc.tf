@@ -38,5 +38,5 @@ resource "google_compute_firewall" "allow-nodes-1" {
     protocol = "TCP"
     ports    = ["15017"]
   }
-  source_ranges = ["0.0.0.0/0","10.220.0.0/14"]
+  source_ranges = ["0.0.0.0/0"]
 }
